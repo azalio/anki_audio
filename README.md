@@ -19,6 +19,7 @@ pip install -r requirements.txt
 * Получить ключ [microsoft cognitive services (5000 озвучиваний
 в месяц бесплатно)](
 https://www.microsoft.com/cognitive-services/en-US/sign-up?ReturnUrl=/cognitive-services/en-us/subscriptions)
+Поставить галочку напротив: **Bing Speech - Preview**
 * Переместить файл config.json.example в config.json
 и отредактировать его:
 ```
