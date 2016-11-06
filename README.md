@@ -32,7 +32,7 @@ vim config.json
 медиа контент](http://ankisrs.net/docs/manual.html#file-locations).
 У меня он, например, находится по пути:
 ```
-/Users/azalio/Documents/Anki/1-й пользователь/collection.media
+/Users/azalio/Documents/Anki/1-й пользователь/
 ```
 * Скачать с сайта [wordsfromtext.com](http://wordsfromtext.com) файл со словами
 для изучения (anki с 1 предложением)
