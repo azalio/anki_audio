@@ -6,13 +6,13 @@ import sys
 import os
 import requests
 import time
+import logging
 
 import config
 
 
 def parse(line):
-    pattern = r'<span style=\"color: #aaa;\">[\(\)\w\.?\s?]+</span> ' \
-              r'([\w\s\.?\-?]+)<br/>'
+    pattern = r'</span>([\w\s\.?\-?]+)<br'
     result = re.search(pattern, line)
     if result:
         word = result.group(1)
@@ -23,12 +23,11 @@ def parse(line):
                 word = result.group(1)
         return word
     else:
-        print('Error in regexp?\n{}'.format(line))
-        return False
+        raise Exception('Error in regexp?\n{}'.format(line))
 
 
 def mp3_save(response, word, audio_format):
-    with open(MEDIA_FOLDER + '/' + word + '.' + audio_format, 'wb') as fh:
+    with open(os.path.join(MEDIA_FOLDER, '{}.{}'.format(word, audio_format)), 'wb') as fh:
         for chunk in response:
             fh.write(chunk)
     return True
@@ -137,10 +136,10 @@ def download_mp3(word):
 
 def mp3(word):
     print('Check existing mp3s')
-    if os.path.isfile(MEDIA_FOLDER + '/' + word + '.mp3'):
+    if os.path.isfile(os.path.join(MEDIA_FOLDER, '{}.mp3'.format(word))):
         print('File exists')
         return 'mp3'
-    elif os.path.isfile(MEDIA_FOLDER + '/' + word + '.wav'):
+    elif os.path.isfile(os.path.join(MEDIA_FOLDER, '{}.wav'.format(word))):
         print('File exists')
         return 'wav'
     else:
@@ -159,7 +158,8 @@ if __name__ == '__main__':
         print('Please, run program with argument:\n{} filename'.format(sys.argv[0]))
         exit(1)
     ANKI_PATH = config.conf['anki']['path']
-    MEDIA_FOLDER = ANKI_PATH + 'collection.media'
+    MEDIA_FOLDER = os.path.join(ANKI_PATH, 'collection.media')
+    MS_KEY = config.conf['ms']['ms_key1']
     MS_KEY = config.conf['ms']['ms_key1']
     MS_AUTH_TOKEN = ms_auth()
 
@@ -173,7 +173,11 @@ if __name__ == '__main__':
         except ValueError as exp:
             pass
         for line in fh:
-            word = parse(line)
+            try:
+                word = parse(line)
+            except Exception as e:
+                logging.warning(e)
+                continue
             seek_fh.seek(0)
             seek_fh.truncate()
             seek_fh.write(str(fh.tell() - len(line)) + '\n')
@@ -184,3 +188,4 @@ if __name__ == '__main__':
                 seek_fh.seek(0)
                 seek_fh.truncate()
                 seek_fh.write(str(fh.tell()) + '\n')
+        os.remove(filename + '.seek')
