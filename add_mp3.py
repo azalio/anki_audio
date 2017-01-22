@@ -15,7 +15,7 @@ def parse(line):
     pattern = r'</span>([\w\s\.?\-?]+)<br'
     result = re.search(pattern, line)
     if result:
-        word = result.group(1)
+        word = result.group(1).strip()
         if len(word.split()) > 1:
             pattern = r'^to (\w+)$'
             result = re.match(pattern, word)
